@@ -29,13 +29,11 @@ namespace gazebo
 			// // set your PID values
 			this->pid = common::PID(30.1, 10.01, 10.03);
 
-			auto joint_name = "arm0_arm1_joint";
-
-			std::string name = this->model->GetJoint("arm0_arm1_joint")->GetScopedName();
+			std::string name = this->model->GetJoint("arm1_arm2_joint")->GetScopedName();
 
 			this->jointController->SetPositionPID(name, pid);
 
-			std::string name1 = this->model->GetJoint("arm1_arm2_joint")->GetScopedName();
+			std::string name1 = this->model->GetJoint("arm2_arm3_joint")->GetScopedName();
 
 			this->jointController->SetPositionPID(name1, pid);
 
@@ -72,23 +70,16 @@ namespace gazebo
 			// 2 returns rotation accross Z axis
 			// If the Joint has only Z axis for rotation, 0 returns that value and 1 and 2 return nan
 
-			double x0 = physics::JointState(this->model->GetJoint("base_arm0_joint")).Position(0);
-			double y0 = physics::JointState(this->model->GetJoint("base_arm0_joint")).Position(1);
-			double z0 = physics::JointState(this->model->GetJoint("base_arm0_joint")).Position(2);
+			double z0 = physics::JointState(this->model->GetJoint("base_arm1_joint")).Position(0);
 			// double z1 = this->model->GetJoint("base_arm0_joint")->GetAngle(2).Radian();
 
-			double x1 = physics::JointState(this->model->GetJoint("arm0_arm1_joint")).Position(0);
-			double y1 = physics::JointState(this->model->GetJoint("arm0_arm1_joint")).Position(1);
-			double z1 = physics::JointState(this->model->GetJoint("arm0_arm1_joint")).Position(2);
+			double x1 = physics::JointState(this->model->GetJoint("arm1_arm2_joint")).Position(0);
+			
+			double x2 = physics::JointState(this->model->GetJoint("arm2_arm3_joint")).Position(0);
 
+			double x3 = physics::JointState(this->model->GetJoint("arm3_arm4_joint")).Position(0);
 
-
-			double x2 = physics::JointState(this->model->GetJoint("arm1_arm2_joint")).Position(0);
-
-			double x3 = physics::JointState(this->model->GetJoint("arm2_arm3_joint")).Position(0);
-
-			// change radian to degree
-			x0 = x0 * 180.0 / M_PI;
+			// change to radian to degree
 			z0 = z0 * 180.0 / M_PI;
 
 			x1 = x1 * 180.0 / M_PI;
@@ -98,14 +89,11 @@ namespace gazebo
 			x3 = x3 * 180.0 / M_PI;
 
 			arm_lib::arm_joint_angles current_angles;
-			current_angles.x0  = x0;
 			current_angles.z0  = z0;
 			current_angles.x1  = x1;
 			current_angles.x2  = x2;
 			current_angles.x3  = x3;
 
-			// prints x0 nan nan ???
-			std::cout << "Current arm0_arm1_joint values: " << x0 << " "<< y0 << " " << z0 << " "<< std::endl;
 			(this->pub).publish(current_angles);
 
 			ros::spinOnce();
@@ -114,14 +102,19 @@ namespace gazebo
 
 		// Update joint angles
 		private:
-		void updateJointAngles(double x0, double z0, double x1, double x2, double x3){
+		void updateJointAngles(double z0, double x1, double x2, double x3){
 
-			std::string base_arm0 = this->model->GetJoint("base_arm0_joint")->GetScopedName();
-			std::string arm0_arm1 = this->model->GetJoint("arm0_arm1_joint")->GetScopedName();
-			std::string arm1_arm2 = this->model->GetJoint("arm1_arm2_joint")->GetScopedName();
-			std::string arm2_arm3 = this->model->GetJoint("arm2_arm3_joint")->GetScopedName();
+			std::string base_arm0 = this->model->GetJoint("base_arm1_joint")->GetScopedName();
+			std::string arm0_arm1 = this->model->GetJoint("arm1_arm2_joint")->GetScopedName();
+			std::string arm1_arm2 = this->model->GetJoint("arm2_arm3_joint")->GetScopedName();
+			std::string arm2_arm3 = this->model->GetJoint("arm3_arm4_joint")->GetScopedName();
 
-			this->jointController->SetJointPosition(base_arm0, x0, 0);
+			// change to radian
+			z0 = z0 * M_PI/ 180.0;
+			x1 = x1 * M_PI/ 180.0;
+			x2 = x2 * M_PI/ 180.0;
+			x3 = x3 * M_PI/ 180.0;
+
 			this->jointController->SetJointPosition(base_arm0, z0, 2);
 
 			this->jointController->SetJointPosition(arm0_arm1, x1, 0);

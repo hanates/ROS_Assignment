@@ -1,4 +1,3 @@
-float64 x0
 float64 z0
 float64 x1
 float64 x2

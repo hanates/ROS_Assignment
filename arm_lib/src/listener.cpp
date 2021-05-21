@@ -30,7 +30,7 @@
 
 void chatterCallback(const arm_lib::arm_joint_angles &msg)
 {
-  ROS_INFO("I heard: %f, %f, % f", msg.x0, msg.z0, msg.x1);
+  ROS_INFO("I heard: %f, %f, % f, %f", msg.z0, msg.x1, msg.x2, msg.x3);
 }
 
 int main(int argc, char **argv)
