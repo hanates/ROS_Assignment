@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -47,11 +48,12 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+  FILES
+  input.msg
+  output.msg
+  arm_joint_angles.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -68,10 +70,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -107,6 +109,7 @@ catkin_package(
 #  LIBRARIES arm_lib
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
+  CATKIN_DEPENDS message_runtime
 )
 
 ###########
@@ -204,3 +207,15 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+# add_executable(publisher src/publisher.cpp)
+# target_link_libraries(publisher ${catkin_LIBRARIES})
+# add_dependencies(publisher arm_lib_generate_messages_cpp)
+
+add_executable(listener src/listener.cpp)
+target_link_libraries(listener ${catkin_LIBRARIES})
+add_dependencies(listener arm_lib_generate_messages_cpp)
+
+catkin_install_python(PROGRAMS scripts/publisher.py scripts/listener.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
