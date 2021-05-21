@@ -23,7 +23,7 @@
                 </geometry>
             </visual>
         </link>
-        <link name='arm0'>
+        <link name='arm1'>
             <pose>0 0 .125 0 0 0</pose>
 
             <collision name='collision'>
@@ -44,7 +44,7 @@
                 </geometry>
             </visual>
         </link>
-        <link name='arm1'>
+        <link name='arm2'>
             <pose>0 0 1.15 0 0 0</pose>
 
             <collision name='collision'>
@@ -65,7 +65,7 @@
                 </geometry>
             </visual>
         </link>
-        <link name="arm2">
+        <link name="arm3">
             <pose>0 0 2.65 0 0 0</pose>
             <collision name="collision">
                 <geometry>
@@ -84,7 +84,7 @@
                 </geometry>
             </visual>
         </link>
-        <link name="arm3">
+        <link name="arm4">
             <pose>0 0 3.4 0 0 0</pose>
             <collision name="collision">
                 <geometry>
@@ -103,28 +103,28 @@
                 </geometry>
             </visual>
         </link>
-        <joint type="revolute" name="base_arm0_joint">
+        <joint type="revolute" name="base_arm1_joint">
             <pose>0 0 -0.025 0 0 0</pose>
-            <child>arm0</child>
+            <child>arm1</child>
             <parent>base</parent>
             <axis>
-                <xyz>1 0 1</xyz>
+                <xyz>0 0 1</xyz>
             </axis>
         </joint>
-        <joint type="revolute" name="arm0_arm1_joint">
+        <joint type="revolute" name="arm1_arm2_joint">
             <pose>0 0 -1 0 0 0</pose>
-            <child>arm1</child>
-            <parent>arm0</parent>
+            <child>arm2</child>
+            <parent>arm1</parent>
             <axis>
                 <xyz>1 0 0</xyz>
             </axis>
         </joint>
-        <joint name="arm1_arm2_joint" type="revolute">
+        <joint name="arm2_arm3_joint" type="revolute">
             <parent>
-                arm1
+                arm2
             </parent>
             <child>
-                arm2
+                arm3
             </child>
             <pose>
                 0 0 -0.5 0 0 0</pose>
@@ -134,12 +134,12 @@
                 </xyz>
             </axis>
         </joint>
-        <joint name="arm2_arm3_joint" type="revolute">
+        <joint name="arm3_arm4_joint" type="revolute">
             <parent>
-                arm2
+                arm3
             </parent>
             <child>
-                arm3
+                arm4
             </child>
             <pose>
                 0 0 -0.25 0 0 0</pose>
