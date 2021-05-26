@@ -33,12 +33,12 @@ namespace gazebo
 
 			this->jointController->SetPositionPID(name, pid);
 
-			std::string name1 = this->model->GetJoint("arm2_arm3_joint")->GetScopedName();
+			// std::string name1 = this->model->GetJoint("arm2_arm3_joint")->GetScopedName();
 
-			this->jointController->SetPositionPID(name1, pid);
+			// this->jointController->SetPositionPID(name1, pid);
 			
-			this->init_publisher();
-			// this->init_subscriber();
+			// this->init_publisher();
+			this->init_subscriber();
 		
 			// Listen to the update event. This event is broadcast every
 			// simulation iteration.
@@ -57,8 +57,8 @@ namespace gazebo
 			// this->jointController->SetPositionTarget(name, rad);
 			// this->jointController->Update();
 
-			this->publishCurrentAngles();
-			// this->run_subscriber();
+			// this->publishCurrentAngles();
+			this->run_subscriber();
 			
 		}
 

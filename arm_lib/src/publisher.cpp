@@ -61,20 +61,20 @@ void publishAngles()
   ros::Rate loop_rate(1);
   ros::Publisher pub = n.advertise<arm_lib::arm_joint_angles>("change_angles", 1000);
   double a = 0;
-  while (ros::ok())
-  {
-    arm_lib::arm_joint_angles msg;
-    msg.z0 = rand() % 15;
-    msg.x1 = rand() % 15;
-    msg.x2 = rand() % 15;
-    msg.x3 = rand() % 15;
+  // while (ros::ok())
+  // {
+  //   // arm_lib::arm_joint_angles msg;
+  //   // msg.z0 = rand() % 45;
+  //   // msg.x1 = rand() % 45;
+  //   // msg.x2 = rand() % 45;
+  //   // msg.x3 = rand() % 45;
 
-    ROS_INFO("%f %f %f %f", msg.z0, msg.x1, msg.x2, msg.x3);
-    pub.publish(msg);
-    ros::Duration(3.0).sleep();
-    ros::spinOnce();
+  //   // ROS_INFO("%f %f %f %f", msg.z0, msg.x1, msg.x2, msg.x3);
+  //   // pub.publish(msg);
+  //   // ros::Duration(3.0).sleep();
+  //   ros::spinOnce();
     
-  }
+  // }
     
   
 }
