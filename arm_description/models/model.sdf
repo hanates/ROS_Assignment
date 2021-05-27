@@ -6,7 +6,7 @@
         <link name='base'>
             <pose>0 0 .05 0 0 0</pose>
             <inertial>
-                <mass>100.0</mass>
+                <mass>50.0</mass>
             </inertial>
             <collision name='collision'>
                 <geometry>
@@ -28,7 +28,6 @@
             </visual>
         </link>
         <link name='arm1'>
-            <gravity>0</gravity>
             <pose>0 0 .125 0 0 0</pose>
             <inertial>
                 <mass>.05</mass>
@@ -52,10 +51,9 @@
             </visual>
         </link>
         <link name='arm2'>
-            <gravity>0</gravity>
             <pose>0 0 1.15 0 0 0</pose>
             <inertial>
-                <mass>2.0</mass>
+                <mass>1.0</mass>
             </inertial>
             <collision name='collision'>
                 <geometry>
@@ -76,10 +74,9 @@
             </visual>
         </link>
         <link name="arm3">
-            <gravity>0</gravity>
             <pose>0 0 2.65 0 0 0</pose>
             <inertial>
-                <mass>1.0</mass>
+                <mass>0.5</mass>
             </inertial>
             <collision name="collision">
                 <geometry>
@@ -101,7 +98,7 @@
         <link name="arm4">
             <pose>0 0 3.4 0 0 0</pose>
             <inertial>
-                <mass>.5</mass>
+                <mass>.25</mass>
             </inertial>
             <collision name="collision">
                 <geometry>
@@ -127,12 +124,12 @@
             <axis>
                 <xyz>0 0 1</xyz>
                  <limit>
-                        <!-- <effort>40</effort>  -->
-                        <velocity>1.0</velocity>
+                        <effort>40</effort> 
+                        <!-- <velocity>1.0</velocity> -->
                     </limit>
                 <dynamics>
                     <damping>
-                        1.0</damping>
+                        3.0</damping>
                     <friction>
                         0.3
                     </friction>
@@ -149,12 +146,12 @@
                 <limit>
                         <lower>-1.0</lower>
                         <upper>1.0</upper>
-                        <!-- <effort>40</effort> -->
+                        <effort>40</effort>
                         <velocity>1.0</velocity>
                     </limit>
                  <dynamics>
                     <damping>
-                        1.0</damping>
+                        3.0</damping>
                     <friction>
                         0.3
                     </friction>
@@ -176,9 +173,9 @@
                     1 0 0
                 </xyz>
                  <limit>
-                        <!-- <lower>-1.0</lower>
-                        <upper>1.0</upper> -->
-                        <!-- <effort>40</effort> -->
+                        <lower>-1.0</lower>
+                        <upper>1.0</upper>
+                        <effort>40</effort>
                         <velocity>1.0</velocity>
                     </limit>
                      <dynamics>
@@ -206,9 +203,9 @@
                     1 0 0
                 </xyz>
                  <limit>
-                        <!-- <lower>-1.0</lower>
-                        <upper>1.0</upper> -->
-                        <!-- <effort>40</effort> -->
+                        <lower>-1.0</lower>
+                        <upper>1.0</upper>
+                        <effort>40</effort>
                         <velocity>1.0</velocity>
                     </limit>
                  <dynamics>

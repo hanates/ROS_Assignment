@@ -27,17 +27,26 @@ namespace gazebo
 			this->jointController = this->model->GetJointController();
 
 			// // set your PID values
-			this->pid = common::PID(30.1, 10.01, 10.03);
+			this->pid = common::PID(800, 200, 100);
 
-			std::string name = this->model->GetJoint("arm1_arm2_joint")->GetScopedName();
+			std::string name1 = this->model->GetJoint("base_arm1_joint")->GetScopedName();
 
-			this->jointController->SetPositionPID(name, pid);
+			this->jointController->SetPositionPID(name1, pid);
 
-			// std::string name1 = this->model->GetJoint("arm2_arm3_joint")->GetScopedName();
+			std::string name2 = this->model->GetJoint("arm1_arm2_joint")->GetScopedName();
 
-			// this->jointController->SetPositionPID(name1, pid);
+			this->jointController->SetPositionPID(name2, pid);
+
+			std::string name3 = this->model->GetJoint("arm2_arm3_joint")->GetScopedName();
+
+			this->jointController->SetPositionPID(name3, pid);
+
+			std::string name4 = this->model->GetJoint("arm3_arm4_joint")->GetScopedName();
+
+			this->jointController->SetPositionPID(name4, pid);
 			
-			// this->init_publisher();
+			this->init_node();
+			this->init_publisher();
 			this->init_subscriber();
 		
 			// Listen to the update event. This event is broadcast every
@@ -50,35 +59,27 @@ namespace gazebo
 	public:
 		void OnUpdate()
 		{
-			// 	float angleDegree = -90;
-			// 	float rad = M_PI * angleDegree / 180;
-
-			// this->jointController->SetPositionPID(name, pid);
-			// this->jointController->SetPositionTarget(name, rad);
-			// this->jointController->Update();
-
-			// this->publishCurrentAngles();
+			
+			this->publishCurrentAngles();
 			this->run_subscriber();
 			
 		}
 
-		
-
 		// Update joint angles
 		private:
 
-		void init_publisher(){
+		void init_node(){
 			int argc = 0;
 			char **argv = NULL;
-			ros::init(argc, argv, "angle_publisher");
+			ros::init(argc, argv, "robot_control");
+		}
+
+		void init_publisher(){
 			ros::NodeHandle n;
 			this->pub = n.advertise<arm_lib::arm_joint_angles>("joint_angles", 1000);
 		}
 
 		void init_subscriber(){
-			int argc = 0;
-			char **argv = NULL;
-			ros::init(argc, argv, "angle_changer");
 			ros::NodeHandle n_;
 			this->sub = n_.subscribe("change_angles", 1000, &ModelPush::updateRobot, this);
 		}
@@ -93,6 +94,8 @@ namespace gazebo
 
 		void updateJointAngles(double z0, double x1, double x2, double x3){
 
+			ROS_INFO("%f %f %f %f", z0,x1,x2,x3);
+
 			std::string base_arm1 = this->model->GetJoint("base_arm1_joint")->GetScopedName();
 			std::string arm1_arm2 = this->model->GetJoint("arm1_arm2_joint")->GetScopedName();
 			std::string arm2_arm3 = this->model->GetJoint("arm2_arm3_joint")->GetScopedName();
@@ -103,14 +106,15 @@ namespace gazebo
 			x1 = x1 * M_PI/ 180.0;
 			x2 = x2 * M_PI/ 180.0;
 			x3 = x3 * M_PI/ 180.0;
+			ROS_INFO("%f %f %f %f\n\n", z0,x1,x2,x3);
 
-			this->jointController->SetJointPosition(base_arm1, z0, 0);
+			this->jointController->SetPositionTarget(base_arm1, z0);
 
-			this->jointController->SetJointPosition(arm1_arm2, x1, 0);
+			this->jointController->SetPositionTarget(arm1_arm2, x1);
 
-			this->jointController->SetJointPosition(arm2_arm3, x2, 0);
+			this->jointController->SetPositionTarget(arm2_arm3, x2);
 
-			this->jointController->SetJointPosition(arm3_arm4, x3, 0);
+			this->jointController->SetPositionTarget(arm3_arm4, x3);
 
 
 		}
@@ -156,16 +160,15 @@ namespace gazebo
 	private:
 		physics::ModelPtr model;
 
-		// 	// A joint controller object
-		// 	// Takes PID value and apply angular velocity
-		// 	//  or sets position of the angles
+		// A joint controller object
+		// Takes PID value and apply angular velocity
+		//  or sets position of the angles
 	private:
 		physics::JointControllerPtr jointController;
 
 	private:
 		event::ConnectionPtr updateConnection;
 
-		// // 	// PID object
 	private:
 		common::PID pid;
 

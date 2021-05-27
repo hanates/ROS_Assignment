@@ -22,8 +22,7 @@ def callback(data):
     output_msg.x_n =  arr[0]
     output_msg.y_n = arr[1]
     output_msg.z_n = arr[2]
-    # # rospy.loginfo("%f" % (x))
-    # # print(rotate(yaw, pitch, roll,z , y, x))
+    
     rospy.loginfo("%f %f %f" % (output_msg.x_n, output_msg.y_n, output_msg.z_n))
 
 def rotate(yaw, pitch, roll,z , y, x, d):
@@ -73,10 +72,6 @@ def rotate(yaw, pitch, roll,z , y, x, d):
     # vector matrix multiplication
     res = res * v
     
-    # rot_ = np.append((np.array(rot_).ravel()), 1)
-    # rot_ = np.reshape(rot_, (4, 1))
-
-    # trans_rot = trans_v * rot_
     return  res
 
 def listener():
