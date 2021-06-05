@@ -221,3 +221,7 @@ DEPENDS roscpp gazebo_ros arm_lib
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+catkin_install_python(PROGRAMS scripts/fk.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)

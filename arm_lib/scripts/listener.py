@@ -53,7 +53,7 @@ def rotate(yaw, pitch, roll,z , y, x, d):
     [0, 0, 0, 1]
     ])
 
-    R = yawMatrix * pitchMatrix * rollMatrix
+    R = (yawMatrix.dot(pitchMatrix)).dot(rollMatrix)
 
     v = np.array([x, y, z, 1])
     v = np.reshape(v, (4, 1))
@@ -67,7 +67,7 @@ def rotate(yaw, pitch, roll,z , y, x, d):
     ])
 
     # trans_v[0:2, 0:2] = R
-    res = R * trans_v
+    res = R.dot(trans_v)
 
     # vector matrix multiplication
     res = res * v

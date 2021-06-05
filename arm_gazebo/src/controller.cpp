@@ -10,6 +10,7 @@
 #include <iostream>
 #include <sstream>
 #include "arm_lib/arm_joint_angles.h"
+#include "arm_lib/JointPose.h"
 
 namespace gazebo
 {
@@ -46,8 +47,9 @@ namespace gazebo
 			this->jointController->SetPositionPID(name4, pid);
 			
 			this->init_node();
-			this->init_publisher();
-			this->init_subscriber();
+			//this->init_publisher();
+			//this->init_subscriber();
+			this->sub_chatter();
 		
 			// Listen to the update event. This event is broadcast every
 			// simulation iteration.
@@ -60,7 +62,7 @@ namespace gazebo
 		void OnUpdate()
 		{
 			
-			this->publishCurrentAngles();
+			//this->publishCurrentAngles();
 			this->run_subscriber();
 			
 		}
@@ -83,6 +85,12 @@ namespace gazebo
 			ros::NodeHandle n_;
 			this->sub = n_.subscribe("change_angles", 1000, &ModelPush::updateRobot, this);
 		}
+		
+		void sub_chatter(){
+			ros::NodeHandle n_;
+			this->sub = n_.subscribe("chatter", 1000, &ModelPush::updateJoints, this);
+
+		}
 
 		void run_subscriber(){
 			ros::spinOnce();
@@ -90,6 +98,11 @@ namespace gazebo
 		
 		void updateRobot(const arm_lib::arm_joint_angles &msg){
 			this->updateJointAngles(msg.z0, msg.x1, msg.x2, msg.x3);
+		}
+		
+		void updateJoints(const arm_lib::JointPose &msg){
+			printf("here");
+			this->updateJointAngles(msg.joint1, msg.joint2, msg.joint3, msg.joint4);
 		}
 
 		void updateJointAngles(double z0, double x1, double x2, double x3){
@@ -107,6 +120,7 @@ namespace gazebo
 			x2 = x2 * M_PI/ 180.0;
 			x3 = x3 * M_PI/ 180.0;
 			ROS_INFO("%f %f %f %f\n\n", z0,x1,x2,x3);
+			printf("here1");
 
 			this->jointController->SetPositionTarget(base_arm1, z0);
 
