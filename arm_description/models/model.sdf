@@ -25,6 +25,15 @@
                         <length>.1</length>
                     </cylinder>
                 </geometry>
+                <material>
+                    <script>
+                        <name>
+                            Gazebo/DarkGrey
+                        </name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
+                </material>
+
             </visual>
         </link>
         <link name='arm1'>
@@ -48,6 +57,14 @@
                         <length>.05</length>
                     </cylinder>
                 </geometry>
+                <material>
+                    <script>
+                        <name>
+                            Gazebo/Orange
+                        </name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
+                </material>
             </visual>
         </link>
         <link name='arm2'>
@@ -71,6 +88,14 @@
                         <length>2.0</length>
                     </cylinder>
                 </geometry>
+                <material>
+                    <script>
+                        <name>
+                            Gazebo/Orange
+                        </name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
+                </material>
             </visual>
         </link>
         <link name="arm3">
@@ -93,6 +118,15 @@
                         <length>1.0</length>
                     </cylinder>
                 </geometry>
+                <material>
+                    <script>
+                        <name>
+                            Gazebo/Orange
+                        </name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
+                </material>
+
             </visual>
         </link>
         <link name="arm4">
@@ -115,6 +149,14 @@
                         <length>0.5</length>
                     </cylinder>
                 </geometry>
+                <material>
+                    <script>
+                        <name>
+                            Gazebo/Orange
+                        </name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
+                </material>
             </visual>
         </link>
         <link name="palm">
@@ -144,7 +186,11 @@
                     </box>
                 </geometry>
                 <material>
-                    <script>Gazebo/Red</script>
+                    <script>
+                        <name>Gazebo/DarkGrey</name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
+
                 </material>
             </visual>
         </link>
@@ -175,7 +221,12 @@
                     </box>
                 </geometry>
                 <material>
-                    <script>Gazebo/Blue</script>
+                    <script>
+                        <name>
+                            Gazebo/DarkGrey
+                        </name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
                 </material>
             </visual>
         </link>
@@ -206,7 +257,12 @@
                     </box>
                 </geometry>
                 <material>
-                    <script>Gazebo/Blue</script>
+                    <script>
+                        <name>
+                            Gazebo/DarkGrey
+                        </name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
                 </material>
             </visual>
         </link>
@@ -237,7 +293,12 @@
                     </box>
                 </geometry>
                 <material>
-                    <script>Gazebo/Green</script>
+                    <script>
+                        <name>
+                            Gazebo/DarkGrey
+                        </name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
                 </material>
             </visual>
         </link>
@@ -268,9 +329,41 @@
                     </box>
                 </geometry>
                 <material>
-                    <script>Gazebo/Green</script>
+                    <script>
+                        <name>
+                            Gazebo/DarkGrey
+                        </name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
                 </material>
             </visual>
+        </link>
+        <link name='t_box'>
+
+
+            <pose>2 1 0.15 0 -0 0</pose>
+
+            <collision name='collision'>
+                <geometry>
+                    <box>
+                        <size>0.3 0.3 0.3</size>
+                    </box>
+                </geometry>
+            </collision>
+            <visual name='visual'>
+                <geometry>
+                    <box>
+                        <size>0.3 0.3 0.3</size>
+                    </box>
+                </geometry>
+                <material>
+                    <script>
+                        <name>Gazebo/Green</name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
+                </material>
+            </visual>
+
         </link>
         <joint type="revolute" name="base_arm1_joint">
             <pose>0 0 -0.025 0 0 0</pose>
@@ -278,17 +371,17 @@
             <parent>base</parent>
             <axis>
                 <xyz>0 0 1</xyz>
-                 <limit>
-                        <effort>40</effort> 
-                        <!-- <velocity>1.0</velocity> -->
-                    </limit>
+                <limit>
+                    <effort>40</effort>
+                    <!-- <velocity>1.0</velocity> -->
+                </limit>
                 <dynamics>
                     <damping>
                         3.0</damping>
                     <friction>
                         0.3
                     </friction>
-                   
+
                 </dynamics>
             </axis>
         </joint>
@@ -299,18 +392,18 @@
             <axis>
                 <xyz>1 0 0</xyz>
                 <limit>
-                        <lower>-1.0</lower>
-                        <upper>1.0</upper>
-                        <effort>40</effort>
-                        <velocity>1.0</velocity>
-                    </limit>
-                 <dynamics>
+                    <lower>-1.0</lower>
+                    <upper>1.0</upper>
+                    <effort>40</effort>
+                    <velocity>1.0</velocity>
+                </limit>
+                <dynamics>
                     <damping>
                         3.0</damping>
                     <friction>
                         0.3
                     </friction>
-                    
+
                 </dynamics>
             </axis>
         </joint>
@@ -327,19 +420,19 @@
                 <xyz>
                     1 0 0
                 </xyz>
-                 <limit>
-                        <lower>-1.0</lower>
-                        <upper>1.0</upper>
-                        <effort>40</effort>
-                        <velocity>1.0</velocity>
-                    </limit>
-                     <dynamics>
+                <limit>
+                    <lower>-1.0</lower>
+                    <upper>1.0</upper>
+                    <effort>40</effort>
+                    <velocity>1.0</velocity>
+                </limit>
+                <dynamics>
                     <damping>
                         1.0</damping>
                     <friction>
                         0.3
                     </friction>
-                   
+
                 </dynamics>
 
             </axis>
@@ -357,19 +450,19 @@
                 <xyz>
                     1 0 0
                 </xyz>
-                 <limit>
-                        <lower>-1.0</lower>
-                        <upper>1.0</upper>
-                        <effort>40</effort>
-                        <velocity>1.0</velocity>
-                    </limit>
-                 <dynamics>
+                <limit>
+                    <lower>-1.0</lower>
+                    <upper>1.0</upper>
+                    <effort>40</effort>
+                    <velocity>1.0</velocity>
+                </limit>
+                <dynamics>
                     <damping>
                         1.0</damping>
                     <friction>
                         0.3
                     </friction>
-                   
+
                 </dynamics>
 
             </axis>
@@ -387,13 +480,13 @@
                 <xyz>
                     1 1 0
                 </xyz>
-                 <dynamics>
+                <dynamics>
                     <damping>
                         1.0</damping>
                     <friction>
                         0.3
                     </friction>
-                   
+
                 </dynamics>
 
             </axis>
@@ -446,7 +539,6 @@
                 <xyz>0 0 1</xyz>
             </axis>
         </joint>
-        
         <plugin name="arm_control" filename="libarm_gazebo.so"/>
     </model>
 </sdf>
