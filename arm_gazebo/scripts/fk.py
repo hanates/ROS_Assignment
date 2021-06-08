@@ -15,20 +15,13 @@ def handle_fk(req):
     M2 = Rx(req.joint_angles[1]).dot(T(0, 0, 2))
     M3 = Rx(req.joint_angles[2]).dot(T(0, 0, 1))
     M4 = Rx(req.joint_angles[3]).dot(T(0, 0, 0.5))
-    M = ((M1.dot(M2)).dot(M3)).dot(M4)
+    M5 = (Rx(req.joint_angles[4]).dot(Ry(req.joint_angles[5]))).dot(0, 0, 0.1)
+    M6 = T(0, 0, 0.5) # Should this be in the z??
+
+    M = ((((M1.dot(M2)).dot(M3)).dot(M4)).dot(M5)).dot(M6)
     
     
-    p = JointPose()
-    p.joint1 = req.joint_angles[0]
-    p.joint2 = req.joint_angles[1]
-    p.joint3 = req.joint_angles[2]
-    p.joint4 = req.joint_angles[3]
-    
-    p.actuator_x = 0;
-    p.actuator_y = 0;
-    p.actuator_z = 0;
-    print(req.joint_angles[0])
-    pub.publish(p)
+    print([M[0][3], M[1][3], M[2][3]])
     
     
     

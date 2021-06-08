@@ -1,6 +1,7 @@
 #include <functional>
 #include "ros/ros.h"
-// #include "arm_lib/arm_joint_angles.h"
+#include "arm_lib/FK.h"
+#include "arm_lib/IK.h"
 #include "std_msgs/Float64.h"
 
 #include <gazebo/gazebo.hh>
@@ -45,14 +46,17 @@ namespace gazebo
 			std::string name4 = this->model->GetJoint("arm3_arm4_joint")->GetScopedName();
 
 			this->jointController->SetPositionPID(name4, pid);
+
 			
 			this->init_node();
 			//this->init_publisher();
 			//this->init_subscriber();
-			this->sub_chatter();
+			// this->sub_chatter();
+
+			// this->init_fk_service();
+			this->init_ik_service();
 		
-			// Listen to the update event. This event is broadcast every
-			// simulation iteration.
+			
 			this->updateConnection = event::Events::ConnectWorldUpdateBegin(
 				std::bind(&ModelPush::OnUpdate, this));
 		}
@@ -63,7 +67,11 @@ namespace gazebo
 		{
 			
 			//this->publishCurrentAngles();
-			this->run_subscriber();
+			// this->run_subscriber();
+
+			// this->run_fk_service();
+			this->run_ik_service();
+
 			
 		}
 
@@ -75,6 +83,74 @@ namespace gazebo
 			char **argv = NULL;
 			ros::init(argc, argv, "robot_control");
 		}
+		void init_fk_service(){
+  			ros::NodeHandle n;
+  			this->srvClient = n.serviceClient<arm_lib::FK>("fk");
+		}
+ 
+		void init_ik_service(){
+  			ros::NodeHandle n;
+  			this->srvClient = n.serviceClient<arm_lib::IK>("ik");
+		}
+
+		void run_ik_service(){
+			
+			arm_lib::IK srv;
+
+			std::string base_arm1 = this->model->GetJoint("base_arm1_joint")->GetScopedName();
+			std::string arm1_arm2 = this->model->GetJoint("arm1_arm2_joint")->GetScopedName();
+			std::string arm2_arm3 = this->model->GetJoint("arm2_arm3_joint")->GetScopedName();
+			std::string arm3_arm4 = this->model->GetJoint("arm3_arm4_joint")->GetScopedName();
+			std::string arm4_palm = this->model->GetJoint("arm4_palm_joint")->GetScopedName();
+			
+			srv.request.actuator_pose = {2.0, 1.0, 0.075};
+			
+			if ((this->srvClient).call(srv)){
+				ROS_INFO("Calling IK Service");
+				ROS_INFO(" %f", srv.response.new_angles[0]);
+				ROS_INFO(" %f", srv.response.new_angles[1]);
+				ROS_INFO(" %f", srv.response.new_angles[2]);
+
+				// this part is not setting the joint angles??
+				this->jointController->SetPositionTarget(base_arm1, srv.response.new_angles[0]);
+				this->jointController->SetPositionTarget(arm1_arm2, srv.response.new_angles[1]);
+				this->jointController->SetPositionTarget(arm2_arm3, srv.response.new_angles[2]);
+				this->jointController->SetPositionTarget(arm3_arm4, srv.response.new_angles[3]);
+   			}
+
+		}
+		
+
+		void run_fk_service()
+   		{
+			
+			
+			double z0 = physics::JointState(this->model->GetJoint("base_arm1_joint")).Position(0);
+
+			double x1 = physics::JointState(this->model->GetJoint("arm1_arm2_joint")).Position(0);
+			
+			double x2 = physics::JointState(this->model->GetJoint("arm2_arm3_joint")).Position(0);
+
+			double x3 = physics::JointState(this->model->GetJoint("arm3_arm4_joint")).Position(0);
+
+			double x4 = physics::JointState(this->model->GetJoint("arm4_palm_joint")).Position(0);
+			double y4 = physics::JointState(this->model->GetJoint("arm4_palm_joint")).Position(1);
+
+
+
+			std::vector<float> angles = {(float)z0, (float)x1, (float)x2, (float)x3, (float)x4, (float)y4};
+
+			arm_lib::FK srv;
+			srv.request.joint_angles = angles;
+			
+			if ((this->srvClient).call(srv)){
+				ROS_INFO("Calling FK Service");
+				ROS_INFO("Pose: %f %f %f", srv.response.actuator_pose[0], srv.response.actuator_pose[1], srv.response.actuator_pose[2]);
+   			
+   			}
+		}
+
+	
 
 		void init_publisher(){
 			ros::NodeHandle n;
@@ -86,12 +162,6 @@ namespace gazebo
 			this->sub = n_.subscribe("change_angles", 1000, &ModelPush::updateRobot, this);
 		}
 		
-		void sub_chatter(){
-			ros::NodeHandle n_;
-			this->sub = n_.subscribe("chatter", 1000, &ModelPush::updateJoints, this);
-
-		}
-
 		void run_subscriber(){
 			ros::spinOnce();
 		}
@@ -148,7 +218,7 @@ namespace gazebo
 
 			double x3 = physics::JointState(this->model->GetJoint("arm3_arm4_joint")).Position(0);
 
-			// change to radian to degree
+			// change radian to degree
 			z0 = z0 * 180.0 / M_PI;
 
 			x1 = x1 * 180.0 / M_PI;
@@ -189,6 +259,8 @@ namespace gazebo
 	private:
 		ros::Publisher pub;
 		ros::Subscriber sub;
+
+		ros::ServiceClient srvClient;
 		
 
 	};
