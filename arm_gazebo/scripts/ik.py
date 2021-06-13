@@ -8,12 +8,14 @@ import tinyik as ik
 def handle_ik(req):
 
     arm = ik.Actuator([
-        "z", [0, 0, 0.15],
-        "x", [0, 0, 2.0],
-        "x", [0, 0, 1.0],
-        "x", [0, 0, 0.5],
-        "x", [0, 0, 0.1], # Rotation is along x and y: how do we include it here?
-        "z", [0, 0, 0.5],
+        "z", [0, 0, 0.15], #base arm1
+        "x", [0, 0, 2.0],  #arm2
+        "x", [0, 0, 1.0],  #arm3
+        "x", [0, 0, 0.5],  #arm4
+        "z", [0, 0, 0.1],  #palm 
+        "x", [0, 0, 0.1],  #palm_jnt 
+        "z", [0, 0, 0.3],  #fingers
+        "z", [0, 0, 0.2]   #tip
     ])
 
     arm.ee = req.actuator_pose

@@ -1,12 +1,12 @@
 <?xml version='1.0'?>
-<sdf version='1.8'>
+<sdf version='1.7'>
     <model name="arm">
         <static>false</static>
-        <self_collide>1</self_collide>
+        <!-- <self_collide>1</self_collide> -->
         <link name='base'>
             <pose>0 0 .05 0 0 0</pose>
             <inertial>
-                <mass>50.0</mass>
+                <mass>200.0</mass>
             </inertial>
             <collision name='collision'>
                 <geometry>
@@ -68,6 +68,7 @@
             </visual>
         </link>
         <link name='arm2'>
+            <gravity>0</gravity>
             <pose>0 0 1.15 0 0 0</pose>
             <inertial>
                 <mass>1.0</mass>
@@ -99,6 +100,7 @@
             </visual>
         </link>
         <link name="arm3">
+            <gravity>0</gravity>
             <pose>0 0 2.65 0 0 0</pose>
             <inertial>
                 <mass>0.5</mass>
@@ -130,6 +132,8 @@
             </visual>
         </link>
         <link name="arm4">
+            <gravity>0</gravity>
+
             <pose>0 0 3.4 0 0 0</pose>
             <inertial>
                 <mass>.25</mass>
@@ -160,6 +164,7 @@
             </visual>
         </link>
         <link name="palm">
+            <gravity>0</gravity>
             <pose>0.0 0.0 3.7 0 0 0</pose>
             <inertial>
                 <inertia>
@@ -194,8 +199,35 @@
                 </material>
             </visual>
         </link>
+        <link name="palm_jnt">
+            <gravity>0</gravity>
+            <pose>0.0 0.0 3.8 0 0 0</pose>
+            <collision name="collision">
+                <geometry>
+                    <box>
+                        <size>0.1 0.2 0.1</size>
+                    </box>
+                </geometry>
+            </collision>
+            <visual name="visual">
+                <geometry>
+                    <box>
+                        <size>0.1 0.2 0.1</size>
+                    </box>
+                </geometry>
+                <material>
+                    <script>
+                        <name>
+                            Gazebo/DarkGrey
+                        </name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
+                </material>
+            </visual>
+        </link>
         <link name="left_finger">
-            <pose>0.1 0.2 3.7 0 0 -0.78539</pose>
+            <self_collide>1</self_collide>
+            <pose>0.1 0.2 3.8 0 0 -0.78539</pose>
             <inertial>
                 <inertia>
                     <ixx>0.01</ixx>
@@ -231,7 +263,8 @@
             </visual>
         </link>
         <link name="left_finger_tip">
-            <pose>0.336 0.3 3.7 0 0 1.5707</pose>
+            <self_collide>1</self_collide>
+            <pose>0.336 0.3 3.8 0 0 1.5707</pose>
             <inertial>
                 <inertia>
                     <ixx>0.01</ixx>
@@ -267,7 +300,8 @@
             </visual>
         </link>
         <link name="right_finger">
-            <pose>0.1 -0.2 3.7 0 0 .78539</pose>
+            <self_collide>1</self_collide>
+            <pose>0.1 -0.2 3.8 0 0 .78539</pose>
             <inertial>
                 <inertia>
                     <ixx>0.01</ixx>
@@ -303,7 +337,8 @@
             </visual>
         </link>
         <link name="right_finger_tip">
-            <pose>0.336 -0.3 3.7 0 0 1.5707</pose>
+            <self_collide>1</self_collide>
+            <pose>0.336 -0.3 3.8 0 0 1.5707</pose>
             <inertial>
                 <inertia>
                     <ixx>0.01</ixx>
@@ -339,10 +374,11 @@
             </visual>
         </link>
         <link name='t_box'>
-
-
-            <pose>2 1 0.15 0 -0 0</pose>
-
+            <self_collide>1</self_collide>
+            <inertial>
+                <mass>50.0</mass>
+            </inertial>
+            <pose>1.8 2 0.15 0 -0 0</pose>
             <collision name='collision'>
                 <geometry>
                     <box>
@@ -377,7 +413,7 @@
                 </limit>
                 <dynamics>
                     <damping>
-                        3.0</damping>
+                        1.0</damping>
                     <friction>
                         0.3
                     </friction>
@@ -391,20 +427,20 @@
             <parent>arm1</parent>
             <axis>
                 <xyz>1 0 0</xyz>
-                <limit>
-                    <lower>-1.0</lower>
-                    <upper>1.0</upper>
-                    <effort>40</effort>
-                    <velocity>1.0</velocity>
-                </limit>
-                <dynamics>
-                    <damping>
-                        3.0</damping>
-                    <friction>
-                        0.3
-                    </friction>
+                <!-- <limit> -->
+            <!-- <lower>-1.0</lower>
+                                            <upper>1.0</upper> -->
+                <!-- <effort>40</effort>
+                                                    <velocity>1.0</velocity>
+                                                </limit>
+                                                <dynamics>
+                                                    <damping>
+                                                        1.0</damping>
+                                                    <friction>
+                                                        0.3
+                                                    </friction> -->
 
-                </dynamics>
+                <!-- </dynamics> -->
             </axis>
         </joint>
         <joint name="arm2_arm3_joint" type="revolute">
@@ -421,8 +457,8 @@
                     1 0 0
                 </xyz>
                 <limit>
-                    <lower>-1.0</lower>
-                    <upper>1.0</upper>
+                    <!-- <lower>-1.0</lower>
+                                                            <upper>1.0</upper> -->
                     <effort>40</effort>
                     <velocity>1.0</velocity>
                 </limit>
@@ -451,8 +487,8 @@
                     1 0 0
                 </xyz>
                 <limit>
-                    <lower>-1.0</lower>
-                    <upper>1.0</upper>
+                    <!-- <lower>-1.0</lower>
+                                                            <upper>1.0</upper> -->
                     <effort>40</effort>
                     <velocity>1.0</velocity>
                 </limit>
@@ -467,7 +503,7 @@
 
             </axis>
         </joint>
-        <joint name="arm4_palm_joint" type="revolute2">
+        <joint name="arm4_palm_joint" type="revolute">
             <parent>
                 arm4
             </parent>
@@ -478,7 +514,31 @@
                 0 0 -0.05 0 0 0</pose>
             <axis>
                 <xyz>
-                    1 1 0
+                    1 0 0
+                </xyz>
+                <dynamics>
+                    <damping>
+                        1.0</damping>
+                    <friction>
+                        0.3
+                    </friction>
+
+                </dynamics>
+
+            </axis>
+        </joint>
+        <joint name="palm_jnt_joint" type="revolute">
+            <parent>
+                palm
+            </parent>
+            <child>
+                palm_jnt
+            </child>
+            <pose>
+                0 0 -0.05 0 0 0</pose>
+            <axis>
+                <xyz>
+                    0 0 1
                 </xyz>
                 <dynamics>
                     <damping>
@@ -494,7 +554,7 @@
         <joint name="palm_left_finger" type="revolute">
             <pose>0 -0.15 0 0 0 0</pose>
             <child>left_finger</child>
-            <parent>palm</parent>
+            <parent>palm_jnt</parent>
             <axis>
                 <limit>
                     <lower>-0.4</lower>
@@ -518,7 +578,7 @@
         <joint name="palm_right_finger" type="revolute">
             <pose>0 0.15 0 0 0 0</pose>
             <child>right_finger</child>
-            <parent>palm</parent>
+            <parent>palm_jnt</parent>
             <axis>
                 <limit>
                     <lower>-0.4</lower>
