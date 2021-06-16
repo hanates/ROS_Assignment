@@ -13,9 +13,8 @@ def handle_ik(req):
         "x", [0, 0, 1.0],  #arm3
         "x", [0, 0, 0.5],  #arm4
         "z", [0, 0, 0.1],  #palm 
-        "x", [0, 0, 0.1],  #palm_jnt 
-        "z", [0, 0, 0.3],  #fingers
-        "z", [0, 0, 0.2]   #tip
+        "y", [0, 0, 0.1] #palm_jnt 
+        # "z", [0, 0, 0.4]
     ])
 
     arm.ee = req.actuator_pose
