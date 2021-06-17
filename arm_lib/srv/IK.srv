@@ -1,3 +1,4 @@
 float64[] actuator_pose
+float64[] joint_positions
 ---
 float64[] new_angles

@@ -8,18 +8,19 @@ import tinyik as ik
 def handle_ik(req):
 
     arm = ik.Actuator([
-        "z", [0, 0, 0.15], #base arm1
-        "x", [0, 0, 2.0],  #arm2
-        "x", [0, 0, 1.0],  #arm3
-        "x", [0, 0, 0.5],  #arm4
-        "z", [0, 0, 0.1],  #palm 
-        "y", [0, 0, 0.1] #palm_jnt 
-        # "z", [0, 0, 0.4]
+        "z", [0, 0, 0.15],
+        "x", [0, 0, 2.0],
+        "x", [0, 0, 1.0],
+        "x", [0, 0, .5],
+        "z", [0, 0, 0.02],
+        "x", [0, 0, 0.02]
     ])
 
+    arm.angles = req.joint_positions
     arm.ee = req.actuator_pose
 
     print(arm.angles)
+    print(req.actuator_pose)
    
 
     return IKResponse(arm.angles)

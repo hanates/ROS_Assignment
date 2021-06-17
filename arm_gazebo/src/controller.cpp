@@ -12,6 +12,8 @@
 #include <sstream>
 #include "arm_lib/arm_joint_angles.h"
 #include "arm_lib/JointPose.h"
+#include "arm_lib/actuator_pos.h"
+#include "arm_lib/control_cmd.h"
 
 namespace gazebo
 {
@@ -22,92 +24,60 @@ namespace gazebo
 	public:
 		void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
 		{
-			// Store the pointer to the model
 			this->model = _parent;
-
-			// // instiantiate the joint controller
 			this->jointController = this->model->GetJointController();
+			this->jointList = model->GetJoints();
 
-			// // set your PID values
-			this->pid = common::PID(30, 10, 10);
+			this->pid = common::PID(32.0, 7.0, 5.0);
 
-			std::string name1 = this->model->GetJoint("base_arm1_joint")->GetScopedName();
+			for (int i = 0; i < jointList.size() - 4; i++)
+			{
+				jointController->SetPositionTarget(jointList[i]->GetScopedName(), 0);
+				jointController->SetPositionPID(jointList[i]->GetScopedName(), this->pid);
+			}
 
-			this->jointController->SetPositionPID(name1, pid);
+			this->pid = common::PID(19.0, 10.0, 10.0);
 
-			std::string name2 = this->model->GetJoint("arm1_arm2_joint")->GetScopedName();
 
-			this->jointController->SetPositionPID(name2, pid);
+			jointController->SetPositionPID(model->GetJoint("palm_left_finger")->GetScopedName(), this->pid);
+			jointController->SetPositionPID(model->GetJoint("palm_right_finger")->GetScopedName(), this->pid);
 
-			std::string name3 = this->model->GetJoint("arm2_arm3_joint")->GetScopedName();
-
-			this->jointController->SetPositionPID(name3, pid);
-
-			std::string name4 = this->model->GetJoint("arm3_arm4_joint")->GetScopedName();
-
-			this->jointController->SetPositionPID(name4, pid);
-
-			std::string name5 = this->model->GetJoint("arm4_palm_joint")->GetScopedName();
-
-			this->jointController->SetPositionPID(name5, pid);
-
-			std::string name6 = this->model->GetJoint("palm_jnt_joint")->GetScopedName();
-
-			this->jointController->SetPositionPID(name6, pid);
-
-			std::string name7 = this->model->GetJoint("palm_left_finger")->GetScopedName();
-			
-			this->jointController->SetPositionPID(name7, pid);
-
-			std::string name8 = this->model->GetJoint("left_finger_tip_joint")->GetScopedName();
-			
-			this->jointController->SetPositionPID(name8, pid);
-
-			std::string name9 = this->model->GetJoint("palm_right_finger")->GetScopedName();
-			
-			this->jointController->SetPositionPID(name9, pid);
-			
-			std::string name10 = this->model->GetJoint("right_finger_tip_joint")->GetScopedName();
-				
-			this->jointController->SetPositionPID(name10, pid);
-
+			this->jointController->SetPositionTarget(model->GetJoint("arm1_arm2_joint")->GetScopedName(), -0.4);
+			this->jointController->SetPositionTarget(model->GetJoint("palm_left_finger")->GetScopedName(), -0.7);
+			this->jointController->SetPositionTarget(model->GetJoint("palm_right_finger")->GetScopedName(), 0.7);
 
 			
 			this->init_node();
-			//this->init_publisher();
-			//this->init_subscriber();
-			// this->sub_chatter();
 
-			// this->init_fk_service();
+			/* -- Assignment 1
+			this->init_publisher();
+			this->init_subscriber();
+			*/
+
+			// this->init_fk_service(); -- to initialize FK service
+
 			this->init_ik_service();
-			
-		
+			this->init_ik_subscriber();
+			this->init_cmd_subscriber();
+
+
 			
 			this->updateConnection = event::Events::ConnectWorldUpdateBegin(
 				std::bind(&ModelPush::OnUpdate, this));
 		}
 
-		// Called by the world update start event
 	public:
 		void OnUpdate()
 		{
+			run_subscriber();
 			
-			//this->publishCurrentAngles();
-			// this->run_subscriber();
+			//this->publishCurrentAngles(); -- Assignment 1
 
-			// this->run_fk_service();
+			// this->run_fk_service(); -- to run FK service
 			
-			this->run_ik_service();
-			
-			
-			// this->updateJointAngles(1.0 + this->x,10.0,10.0,30.0);
-			// (this->x)+=0.5;
-			
-
 			
 		}
 
-		// Update joint angles
 		private:
 
 		void init_node(){
@@ -125,82 +95,83 @@ namespace gazebo
   			this->srvClient = n.serviceClient<arm_lib::IK>("ik");
 		}
 
-		void catch_box(){
 
-			std::string palm_lt_fng = this->model->GetJoint("palm_left_finger")->GetScopedName();
-			std::string palm_lt_tip = this->model->GetJoint("left_finger_tip_joint")->GetScopedName();
-			std::string palm_rt_fng = this->model->GetJoint("palm_right_finger")->GetScopedName();
-			std::string palm_rt_tip = this->model->GetJoint("right_finger_tip_joint")->GetScopedName();
-			std::string arm1_arm2 = this->model->GetJoint("arm1_arm2_joint")->GetScopedName();
-
-
-
-			int rad = 0.5;
-
-			this->jointController->SetPositionTarget(palm_lt_fng, -rad);
-			this->jointController->SetPositionTarget(palm_lt_tip, -rad);
-			this->jointController->SetPositionTarget(palm_rt_fng, rad);
-			this->jointController->SetPositionTarget(palm_rt_tip, rad);
-			// this->jointController->SetPositionTarget(arm1_arm2, rad);
-
-			this->jointController->Update();
-
-
+		void init_publisher(){
+			ros::NodeHandle n;
+			this->pub = n.advertise<arm_lib::arm_joint_angles>("joint_angles", 1000);
 		}
 
-		void run_ik_service(){
+		void init_subscriber(){
+			ros::NodeHandle n_;
+			this->sub = n_.subscribe("change_angles", 1000, &ModelPush::updateRobot, this);
+		}
 
-			if(this->ik_srv != 1){
-				arm_lib::IK srv;
+		void init_ik_subscriber(){
+			ros::NodeHandle n_;
+			this->sub = n_.subscribe("ik_angles", 1000, &ModelPush::run_ik_service, this);
+		}
 
-				std::string base_arm1 = this->model->GetJoint("base_arm1_joint")->GetScopedName();
-				std::string arm1_arm2 = this->model->GetJoint("arm1_arm2_joint")->GetScopedName();
-				std::string arm2_arm3 = this->model->GetJoint("arm2_arm3_joint")->GetScopedName();
-				std::string arm3_arm4 = this->model->GetJoint("arm3_arm4_joint")->GetScopedName();
-				std::string arm4_palm = this->model->GetJoint("arm4_palm_joint")->GetScopedName();
-				std::string palm_jnt = this->model->GetJoint("palm_jnt_joint")->GetScopedName();
-				std::string palm_lt_fng = this->model->GetJoint("palm_left_finger")->GetScopedName();
-				std::string palm_lt_tip = this->model->GetJoint("left_finger_tip_joint")->GetScopedName();
-				std::string palm_rt_fng = this->model->GetJoint("palm_right_finger")->GetScopedName();
-				std::string palm_rt_tip = this->model->GetJoint("right_finger_tip_joint")->GetScopedName();
-				
-				// std::string jnt_tip1 = this->model->GetJoint("arm4_palm_joint")->GetScopedName();
-				
-				srv.request.actuator_pose = {1.6, 1.6, 0};
-				
-				if ((this->srvClient).call(srv)){
-					ROS_INFO("Calling IK Service");
-					ROS_INFO(" %f", srv.response.new_angles[0]);
-					ROS_INFO(" %f", srv.response.new_angles[1]);
-					ROS_INFO(" %f", srv.response.new_angles[2]);
-
-					// this part is not setting the joint angles??
-					this->jointController->SetPositionTarget(base_arm1, srv.response.new_angles[0]);
-					this->jointController->SetPositionTarget(arm1_arm2, srv.response.new_angles[1]);
-					this->jointController->SetPositionTarget(arm2_arm3, srv.response.new_angles[2]);
-					this->jointController->SetPositionTarget(arm3_arm4, srv.response.new_angles[3]);
-					this->jointController->SetPositionTarget(arm4_palm, srv.response.new_angles[4]);
-					this->jointController->SetPositionTarget(palm_jnt, srv.response.new_angles[5]);
-					this->jointController->SetPositionTarget(palm_lt_fng, srv.response.new_angles[6]);
-					this->jointController->SetPositionTarget(palm_lt_tip, srv.response.new_angles[7]);
-					this->jointController->SetPositionTarget(palm_rt_fng, srv.response.new_angles[6]);
-					this->jointController->SetPositionTarget(palm_rt_tip, srv.response.new_angles[7]);
-					this->jointController->Update();
-
-					this->ik_srv = 1;
-
-					// this->catch_box();
-				}
-
-			}
-	
+		void init_cmd_subscriber(){
+			ros::NodeHandle n_;
+			this->cmd_sub = n_.subscribe("control", 1000, &ModelPush::drag_drop, this);
 		}
 		
 
-		void run_fk_service()
-   		{
+		void drag_drop(const arm_lib::control_cmd &msg){
+
+			std::string command = msg.cmd;
+
+			std::string lt = this->model->GetJoint("palm_left_finger")->GetScopedName();
+			std::string rt = this->model->GetJoint("palm_right_finger")->GetScopedName();
+
+			if (command == "catch")
+			{
+				ROS_INFO("Catching");
+
+				this->jointController->SetPositionTarget(lt, 0.6);
+				this->jointController->SetPositionTarget(rt, -0.6);
+			}
+			else if (command == "release")
+			{
+				ROS_INFO("Releasing");
+				this->jointController->SetPositionTarget(lt, -0.7);
+				this->jointController->SetPositionTarget(rt, 0.7);
+			}
+			this->jointController->Update();
+		}
+
+		void run_ik_service(const arm_lib::actuator_pos &msg){
+
 			
-			
+			arm_lib::IK srv;
+			srv.request.joint_positions = {0, 0, 0, 0, 0, 0};
+			srv.request.actuator_pose = {msg.x, msg.y, msg.z};
+
+			for (int i = 0; i < jointList.size() - 4; i++)
+			{
+				srv.request.joint_positions[i] = physics::JointState(jointList[i]).Position(0);
+			}
+
+			if ((this->srvClient).call(srv))
+			{			
+	  			ROS_INFO("Calling FK Service");
+				ROS_INFO("Angles: [%f, %f, %f, %f, %f, %f]", srv.response.new_angles[0], srv.response.new_angles[1], srv.response.new_angles[2], srv.response.new_angles[3], srv.response.new_angles[4], srv.response.new_angles[5]);
+
+				for (int i = 0; i < jointList.size() - 4; i++)
+				{
+					jointController->SetPositionTarget(jointList[i]->GetScopedName(), srv.response.new_angles[i]);
+				}
+			}
+			else
+			{
+				ROS_ERROR("Failed to call IK service");
+			}
+
+		}
+		
+
+		void run_fk_service(){
+
 			double z0 = physics::JointState(this->model->GetJoint("base_arm1_joint")).Position(0);
 
 			double x1 = physics::JointState(this->model->GetJoint("arm1_arm2_joint")).Position(0);
@@ -214,8 +185,8 @@ namespace gazebo
 
 
 
-			std::vector<float> angles = {(float)z0, (float)x1, (float)x2, (float)x3, (float)x4, (float)y4};
-
+			std::vector<double> angles = {(double)z0, (double)x1, (double)x2, (double)x3, (double)x4, (double)y4};
+            // std::vector<double> angles = {0.2, 1.0, 0.6, 0.5, 1.0, 1.0, 0};
 			arm_lib::FK srv;
 			srv.request.joint_angles = angles;
 			
@@ -224,20 +195,14 @@ namespace gazebo
 				ROS_INFO("Pose: %f %f %f", srv.response.actuator_pose[0], srv.response.actuator_pose[1], srv.response.actuator_pose[2]);
    			
    			}
+			else
+			{
+				ROS_ERROR("Failed to call FK service");
+			}
 		}
 
 	
 
-		void init_publisher(){
-			ros::NodeHandle n;
-			this->pub = n.advertise<arm_lib::arm_joint_angles>("joint_angles", 1000);
-		}
-
-		void init_subscriber(){
-			ros::NodeHandle n_;
-			this->sub = n_.subscribe("change_angles", 1000, &ModelPush::updateRobot, this);
-		}
-		
 		void run_subscriber(){
 			ros::spinOnce();
 		}
@@ -247,7 +212,6 @@ namespace gazebo
 		}
 		
 		void updateJoints(const arm_lib::JointPose &msg){
-			printf("here");
 			this->updateJointAngles(msg.joint1, msg.joint2, msg.joint3, msg.joint4);
 		}
 
@@ -266,7 +230,6 @@ namespace gazebo
 			x2 = x2 * M_PI/ 180.0;
 			x3 = x3 * M_PI/ 180.0;
 			ROS_INFO("%f %f %f %f\n\n", z0,x1,x2,x3);
-			printf("here1");
 
 			this->jointController->SetPositionTarget(base_arm1, z0);
 
@@ -281,11 +244,6 @@ namespace gazebo
 
 		void publishCurrentAngles(){
 
-			// Get joint position by index. 
-			// 0 returns rotation accross X axis
-			// 1 returns rotation accross Y axis
-			// 2 returns rotation accross Z axis
-			// If the Joint has only Z axis for rotation, 0 returns that value and 1 and 2 return nan
 			double z0 = physics::JointState(this->model->GetJoint("base_arm1_joint")).Position(0);
 
 			double x1 = physics::JointState(this->model->GetJoint("arm1_arm2_joint")).Position(0);
@@ -316,13 +274,9 @@ namespace gazebo
 		}
 		
 
-		// a pointer that points to a model object
 	private:
 		physics::ModelPtr model;
 
-		// A joint controller object
-		// Takes PID value and apply angular velocity
-		//  or sets position of the angles
 	private:
 		physics::JointControllerPtr jointController;
 
@@ -335,11 +289,12 @@ namespace gazebo
 	private:
 		ros::Publisher pub;
 		ros::Subscriber sub;
+		ros::Subscriber cmd_sub;
+		physics::Joint_V jointList;
+		
+
 
 		ros::ServiceClient srvClient;
-		float x;
-		int ik_srv = 0;
-		
 
 	};
 

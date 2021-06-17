@@ -54,6 +54,8 @@ add_message_files(
   output.msg
   arm_joint_angles.msg
   JointPose.msg
+  actuator_pos.msg
+  control_cmd.msg
 )
 
 ## Generate services in the 'srv' folder
